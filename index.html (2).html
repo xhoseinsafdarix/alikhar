@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>بازی سنگ کاغذ قیچی</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: "Vazirmatn", sans-serif;
+    }
+
+    body {
+      background: linear-gradient(to bottom right, #6a11cb, #2575fc);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      text-align: center;
+    }
+
+    .mode-buttons {
+      margin-bottom: 20px;
+    }
+
+    button {
+      background-color: white;
+      color: #2575fc;
+      border: none;
+      padding: 10px 20px;
+      margin: 0 10px;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #e0e0e0;
+    }
+
+    .game {
+      display: none;
+    }
+
+    .choices {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    input[type="radio"] {
+      display: none;
+    }
+
+    .card {
+      width: 120px;
+      height: 120px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border: 2px solid white;
+      border-radius: 15px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      transform: scale(1.1);
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    input[type="radio"]:checked + .card {
+      background-color: rgba(255, 255, 255, 0.4);
+      box-shadow: 0 0 10px white;
+      transform: scale(1.2);
+    }
+
+    .result {
+      margin-top: 20px;
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>بازی سنگ کاغذ قیچی</h1>
+
+    <div class="mode-buttons">
+      <button onclick="startGame('bot')">بازی با ربات 🤖</button>
+      <button onclick="startGame('2p')">دو نفره 👥</button>
+    </div>
+
+    <div id="game" class="game">
+      <h2 id="playerLabel">انتخاب کن:</h2>
+      <div class="choices" id="choices">
+        <label>
+          <input type="radio" name="choice" value="rock" onclick="selectChoice('rock')">
+          <div class="card">✊</div>
+        </label>
+        <label>
+          <input type="radio" name="choice" value="paper" onclick="selectChoice('paper')">
+          <div class="card">✋</div>
+        </label>
+        <label>
+          <input type="radio" name="choice" value="scissors" onclick="selectChoice('scissors')">
+          <div class="card">✌️</div>
+        </label>
+      </div>
+      <div class="result" id="result"></div>
+    </div>
+  </div>
+
+  <script>
+    let gameMode = '';
+    let player1Choice = '';
+    let playerTurn = 1;
+
+    function startGame(mode) {
+      gameMode = mode;
+      document.getElementById('game').style.display = 'block';
+      document.getElementById('result').innerText = '';
+      document.getElementById('playerLabel').innerText = mode === 'bot' ? 'انتخاب کن:' : 'بازیکن 1 انتخاب کن:';
+      clearChoices();
+    }
+
+    function clearChoices() {
+      const radios = document.querySelectorAll('input[name="choice"]');
+      radios.forEach(r => r.checked = false);
+    }
+
+    function selectChoice(choice) {
+      if (gameMode === 'bot') {
+        const botOptions = ['rock', 'paper', 'scissors'];
+        const botChoice = botOptions[Math.floor(Math.random() * 3)];
+        const resultText = getResult(choice, botChoice);
+        document.getElementById('result').innerText = `ربات انتخاب کرد: ${symbol(botChoice)} | نتیجه: ${resultText}`;
+      } else if (gameMode === '2p') {
+        if (playerTurn === 1) {
+          player1Choice = choice;
+          playerTurn = 2;
+          document.getElementById('playerLabel').innerText = 'بازیکن 2 انتخاب کن:';
+          clearChoices();
+        } else {
+          const player2Choice = choice;
+          const resultText = getResult(player1Choice, player2Choice);
+          document.getElementById('result').innerText = `بازیکن 1: ${symbol(player1Choice)} | بازیکن 2: ${symbol(player2Choice)} | نتیجه: ${resultText}`;
+          playerTurn = 1;
+          document.getElementById('playerLabel').innerText = 'بازیکن 1 انتخاب کن:';
+        }
+      }
+    }
+
+    function getResult(p1, p2) {
+      if (p1 === p2) return 'مساوی';
+      if ((p1 === 'rock' && p2 === 'scissors') || (p1 === 'paper' && p2 === 'rock') || (p1 === 'scissors' && p2 === 'paper')) {
+        return gameMode === 'bot' ? 'شما بردید!' : 'بازیکن 1 برد!';
+      } else {
+        return gameMode === 'bot' ? 'ربات برد!' : 'بازیکن 2 برد!';
+      }
+    }
+
+    function symbol(choice) {
+      return choice === 'rock' ? '✊' : choice === 'paper' ? '✋' : '✌️';
+    }
+  </script>
+</body>
+</html>
